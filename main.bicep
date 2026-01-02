@@ -9,9 +9,6 @@ param location string = resourceGroup().location
 @description('Name of the existing VNet')
 param vnetName string
 
-@description('Name of the existing resource group containing the VNet')
-param vnetResourceGroup string
-
 @description('Name of the subnet for Container Apps')
 param containerAppSubnetName string
 
@@ -139,11 +136,10 @@ param workloadProfileType string = 'Consumption'
 param containerAppInternal bool = true
 
 // ========================================
-// Create Subnets in VNet (cross-RG deployment)
+// Create Subnets in VNet
 // ========================================
 module subnetsModule 'modules/subnets.bicep' = {
   name: 'subnets-deployment'
-  scope: resourceGroup(vnetResourceGroup)
   params: {
     vnetName: vnetName
     containerAppSubnetName: containerAppSubnetName

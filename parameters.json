@@ -5,7 +5,6 @@
     "location": { "value": "eastus" },
 
     "vnetName": { "value": "WTW-ITCOLT-DEV" },
-    "vnetResourceGroup": { "value": "B2C-LYZR-BILLINGAUTO-RGRP" },
     "containerAppSubnetName": { "value": "containerAppSubnet" },
     "containerAppSubnetAddress": { "value": "10.58.52.0/28" },
     "dbSubnetName": { "value": "dbSubnet" },
@@ -18,7 +17,7 @@
     "logAnalyticsRetentionDays": { "value": 30 },
 
     "acrName": { "value": "billingautoacr" },
-    "acrSku": { "value": "Standard" },
+    "acrSku": { "value": "Basic" },
     "acrEnableAdmin": { "value": false },
 
     "pgServerName": { "value": "billing-auto-pg" },
