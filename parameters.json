@@ -1,0 +1,52 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": { "value": "eastus" },
+
+    "vnetName": { "value": "WTW-ITCOLT-DEV" },
+    "vnetResourceGroup": { "value": "B2C-LYZR-BILLINGAUTO-RGRP" },
+    "containerAppSubnetName": { "value": "containerAppSubnet" },
+    "containerAppSubnetAddress": { "value": "10.58.52.0/28" },
+    "dbSubnetName": { "value": "dbSubnet" },
+    "dbSubnetAddress": { "value": "10.58.52.16/28" },
+
+    "managedIdentityName": { "value": "billing-auto-mi" },
+
+    "logAnalyticsWorkspaceName": { "value": "billing-auto-logs" },
+    "logAnalyticsSku": { "value": "PerGB2018" },
+    "logAnalyticsRetentionDays": { "value": 30 },
+
+    "acrName": { "value": "billingautoacr" },
+    "acrSku": { "value": "Standard" },
+    "acrEnableAdmin": { "value": false },
+
+    "pgServerName": { "value": "billing-auto-pg" },
+    "postgresVersion": { "value": "16" },
+    "pgSkuName": { "value": "Standard_B2s" },
+    "pgSkuTier": { "value": "Burstable" },
+    "pgStorageSizeGB": { "value": 32 },
+    "pgStorageTier": { "value": "P4" },
+    "pgIops": { "value": 120 },
+    "pgAutoGrow": { "value": "Enabled" },
+    "pgBackupRetentionDays": { "value": 7 },
+    "pgGeoRedundantBackup": { "value": "Disabled" },
+    "pgHighAvailabilityMode": { "value": "Disabled" },
+    "databaseName": { "value": "billing_db" },
+
+    "keyVaultName": { "value": "billing-auto-kv" },
+    "keyVaultSku": { "value": "standard" },
+    "kvNetworkAclsDefaultAction": { "value": "Deny" },
+
+    "storageAccountName": { "value": "billingautostorage" },
+    "storageReplicationType": { "value": "LRS" },
+    "storageSku": { "value": "Standard" },
+    "storageAccessTier": { "value": "Hot" },
+    "storageEnablePrivateEndpoint": { "value": false },
+
+    "containerAppEnvName": { "value": "billing-auto-env" },
+    "workloadProfileName": { "value": "Consumption" },
+    "workloadProfileType": { "value": "Consumption" },
+    "containerAppInternal": { "value": true }
+  }
+}
