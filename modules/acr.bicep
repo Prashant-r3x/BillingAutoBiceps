@@ -24,9 +24,6 @@ resource acr 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' = {
   properties: {
     adminUserEnabled: enableAdmin
     publicNetworkAccess: 'Enabled'
-    networkRuleSet: {
-      defaultAction: 'Allow'
-    }
   }
 }
 
