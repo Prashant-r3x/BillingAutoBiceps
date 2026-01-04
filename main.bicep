@@ -87,6 +87,12 @@ param pgGeoRedundantBackup string = 'Disabled'
 @description('PostgreSQL high availability mode')
 param pgHighAvailabilityMode string = 'Disabled'
 
+@description('Enable private endpoint for PostgreSQL (requires same region as subnet)')
+param pgEnablePrivateEndpoint bool = false
+
+@description('PostgreSQL location (can be different from other resources if using public access)')
+param pgLocation string = 'uksouth'
+
 @description('Name of the database to create')
 param databaseName string
 
@@ -191,10 +197,11 @@ module postgresModule 'modules/postgresql.bicep' = {
   name: 'postgres-deployment'
   params: {
     pgServerName: pgServerName
-    location: location
+    location: pgLocation
     managedIdentityId: managedIdentity.id
     managedIdentityPrincipalId: managedIdentity.properties.principalId
-    privateEndpointSubnetId: subnetsModule.outputs.dbSubnetId
+    privateEndpointSubnetId: pgEnablePrivateEndpoint ? subnetsModule.outputs.dbSubnetId : ''
+    enablePrivateEndpoint: pgEnablePrivateEndpoint
     postgresVersion: postgresVersion
     skuName: pgSkuName
     skuTier: pgSkuTier

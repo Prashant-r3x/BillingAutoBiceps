@@ -12,8 +12,11 @@ param managedIdentityId string
 @description('User Assigned Managed Identity Principal ID (Object ID)')
 param managedIdentityPrincipalId string
 
-@description('Private Endpoint Subnet ID')
-param privateEndpointSubnetId string
+@description('Private Endpoint Subnet ID (optional, only used if enablePrivateEndpoint is true)')
+param privateEndpointSubnetId string = ''
+
+@description('Enable private endpoint (requires same region as subnet)')
+param enablePrivateEndpoint bool = false
 
 @description('Postgres version')
 param postgresVersion string = '16'
@@ -64,7 +67,7 @@ resource postgres 'Microsoft.DBforPostgreSQL/flexibleServers@2025-01-01-preview'
   properties: {
     version: postgresVersion
     network: {
-      publicNetworkAccess: 'Disabled'
+      publicNetworkAccess: enablePrivateEndpoint ? 'Disabled' : 'Enabled'
     }
     storage: {
       storageSizeGB: storageSizeGB
@@ -113,7 +116,7 @@ resource postgresAdministrator 'Microsoft.DBforPostgreSQL/flexibleServers/admini
 // NOTE: DNS is managed by WTW automation - do NOT integrate with Private DNS Zone
 // See: https://wtw.sharepoint.com/sites/KnowledgeHub/SitePages/Private-Endpoint-Automation.aspx
 // ---------------------------
-resource postgresPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = {
+resource postgresPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = if (enablePrivateEndpoint) {
   name: '${pgServerName}-pe'
   location: location
   properties: {
@@ -138,4 +141,4 @@ output postgresServerName string = postgres.name
 output postgresServerResourceId string = postgres.id
 output postgresServerFQDN string = postgres.properties.fullyQualifiedDomainName
 output databaseName string = database.name
-output postgresPrivateEndpointId string = postgresPrivateEndpoint.id
+output postgresPrivateEndpointId string = enablePrivateEndpoint ? postgresPrivateEndpoint.id : ''
