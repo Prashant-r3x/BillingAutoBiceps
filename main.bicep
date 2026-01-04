@@ -193,28 +193,29 @@ module acrModule 'modules/acr.bicep' = {
 // ========================================
 // Deploy PostgreSQL Module
 // ========================================
-module postgresModule 'modules/postgresql.bicep' = {
-  name: 'postgres-deployment'
-  params: {
-    pgServerName: pgServerName
-    location: pgLocation
-    managedIdentityId: managedIdentity.id
-    managedIdentityPrincipalId: managedIdentity.properties.principalId
-    privateEndpointSubnetId: pgEnablePrivateEndpoint ? subnetsModule.outputs.dbSubnetId : ''
-    enablePrivateEndpoint: pgEnablePrivateEndpoint
-    postgresVersion: postgresVersion
-    skuName: pgSkuName
-    skuTier: pgSkuTier
-    storageSizeGB: pgStorageSizeGB
-    storageTier: pgStorageTier
-    iops: pgIops
-    autoGrow: pgAutoGrow
-    backupRetentionDays: pgBackupRetentionDays
-    geoRedundantBackup: pgGeoRedundantBackup
-    highAvailabilityMode: pgHighAvailabilityMode
-    databaseName: databaseName
-  }
-}
+// COMMENTED OUT: Deploy Key Vault first, then uncomment PostgreSQL
+// module postgresModule 'modules/postgresql.bicep' = {
+//   name: 'postgres-deployment'
+//   params: {
+//     pgServerName: pgServerName
+//     location: pgLocation
+//     managedIdentityId: managedIdentity.id
+//     managedIdentityPrincipalId: managedIdentity.properties.principalId
+//     privateEndpointSubnetId: pgEnablePrivateEndpoint ? subnetsModule.outputs.dbSubnetId : ''
+//     enablePrivateEndpoint: pgEnablePrivateEndpoint
+//     postgresVersion: postgresVersion
+//     skuName: pgSkuName
+//     skuTier: pgSkuTier
+//     storageSizeGB: pgStorageSizeGB
+//     storageTier: pgStorageTier
+//     iops: pgIops
+//     autoGrow: pgAutoGrow
+//     backupRetentionDays: pgBackupRetentionDays
+//     geoRedundantBackup: pgGeoRedundantBackup
+//     highAvailabilityMode: pgHighAvailabilityMode
+//     databaseName: databaseName
+//   }
+// }
 
 // ========================================
 // Deploy Container App Environment Module
@@ -280,9 +281,9 @@ output acrId string = acrModule.outputs.acrId
 output acrLoginServer string = acrModule.outputs.acrLoginServer
 output acrName string = acrModule.outputs.acrName
 
-output postgresServerName string = postgresModule.outputs.postgresServerName
-output postgresServerFQDN string = postgresModule.outputs.postgresServerFQDN
-output databaseName string = postgresModule.outputs.databaseName
+// output postgresServerName string = postgresModule.outputs.postgresServerName
+// output postgresServerFQDN string = postgresModule.outputs.postgresServerFQDN
+// output databaseName string = postgresModule.outputs.databaseName
 
 output keyVaultId string = keyVaultModule.outputs.keyVaultId
 output keyVaultName string = keyVaultModule.outputs.keyVaultName
