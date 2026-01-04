@@ -246,7 +246,6 @@ module keyVaultModule 'modules/keyvault.bicep' = {
     containerAppSubnetId: subnetsModule.outputs.containerAppSubnetId
     principalIds: [
       managedIdentity.properties.principalId
-      containerAppEnvModule.outputs.containerEnvPrincipalId
     ]
   }
 }
