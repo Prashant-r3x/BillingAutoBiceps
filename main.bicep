@@ -245,9 +245,6 @@ module keyVaultModule 'modules/keyvault.bicep' = {
     keyVaultSku: keyVaultSku
     networkAclsDefaultAction: kvNetworkAclsDefaultAction
     containerAppSubnetId: subnetsModule.outputs.containerAppSubnetId
-    principalIds: [
-      managedIdentity.properties.principalId
-    ]
   }
 }
 
