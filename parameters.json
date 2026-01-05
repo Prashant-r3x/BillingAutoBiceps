@@ -31,8 +31,6 @@
     "pgBackupRetentionDays": { "value": 7 },
     "pgGeoRedundantBackup": { "value": "Disabled" },
     "pgHighAvailabilityMode": { "value": "Disabled" },
-    "pgEnablePrivateEndpoint": { "value": true },
-    "pgLocation": { "value": "eastus" },
     "databaseName": { "value": "billing_db" },
 
     "keyVaultName": { "value": "billing-auto-kv" },
