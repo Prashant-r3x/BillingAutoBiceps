@@ -41,6 +41,7 @@ resource cosmosPostgres 'Microsoft.DBforPostgreSQL/serverGroupsv2@2022-11-08' = 
     postgresqlVersion: postgresVersion
     administratorLoginPassword: administratorLoginPassword
     enableHa: enableHa
+    coordinatorServerEdition: 'GeneralPurpose'
     coordinatorVCores: coordinatorVCores
     coordinatorStorageQuotaInMb: coordinatorStorageQuotaInMb
     coordinatorEnablePublicIpAccess: false

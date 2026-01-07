@@ -30,7 +30,7 @@
     "pgNodeStorageMb": { "value": 131072 },
     "pgEnableHa": { "value": false },
 
-    "keyVaultName": { "value": "billing-auto-kv" },
+    "keyVaultName": { "value": "billing-auto-kv-v2" },
     "keyVaultSku": { "value": "standard" },
     "kvNetworkAclsDefaultAction": { "value": "Deny" },
     "kvEnablePrivateEndpoint": { "value": false },
