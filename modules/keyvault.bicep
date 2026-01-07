@@ -27,6 +27,12 @@ param networkAclsBypass string = 'AzureServices'
 @description('Container App Subnet ID')
 param containerAppSubnetId string
 
+@description('Enable private endpoint for Key Vault')
+param enablePrivateEndpoint bool = false
+
+@description('Subnet ID for private endpoint')
+param privateEndpointSubnetId string = ''
+
 resource kv 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: keyVaultName
   location: location
@@ -35,6 +41,7 @@ resource kv 'Microsoft.KeyVault/vaults@2023-07-01' = {
     enableRbacAuthorization: enableRbacAuthorization
     enableSoftDelete: true
     enablePurgeProtection: true
+    publicNetworkAccess: enablePrivateEndpoint ? 'Disabled' : 'Enabled'
     sku: {
       name: keyVaultSku
       family: keyVaultFamily
@@ -42,15 +49,42 @@ resource kv 'Microsoft.KeyVault/vaults@2023-07-01' = {
     networkAcls: {
       defaultAction: networkAclsDefaultAction
       bypass: networkAclsBypass
-      virtualNetworkRules: [
+      virtualNetworkRules: !enablePrivateEndpoint ? [
         {
           id: containerAppSubnetId
           ignoreMissingVnetServiceEndpoint: false
         }
-      ]
+      ] : []
     }
+  }
+}
+
+// ---------------------------
+// Private Endpoint for Key Vault (if enabled)
+// NOTE: DNS is managed by WTW automation - do NOT integrate with Private DNS Zone
+// See: https://wtw.sharepoint.com/sites/KnowledgeHub/SitePages/Private-Endpoint-Automation.aspx
+// ---------------------------
+resource kvPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-05-01' = if (enablePrivateEndpoint) {
+  name: '${keyVaultName}-pe'
+  location: location
+  properties: {
+    subnet: {
+      id: privateEndpointSubnetId
+    }
+    privateLinkServiceConnections: [
+      {
+        name: '${keyVaultName}-connection'
+        properties: {
+          privateLinkServiceId: kv.id
+          groupIds: [
+            'vault'
+          ]
+        }
+      }
+    ]
   }
 }
 
 output keyVaultId string = kv.id
 output keyVaultName string = kv.name
+output keyVaultPrivateEndpointId string = enablePrivateEndpoint ? kvPrivateEndpoint.id : ''

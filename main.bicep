@@ -21,6 +21,12 @@ param dbSubnetName string
 @description('Address prefix for database subnet (e.g., 10.58.52.16/28)')
 param dbSubnetAddress string
 
+@description('Name of the subnet for private endpoints')
+param privateEndpointSubnetName string
+
+@description('Address prefix for private endpoint subnet (e.g., 10.58.52.64/27)')
+param privateEndpointSubnetAddress string
+
 // ========================================
 // Managed Identity Parameters
 // ========================================
@@ -51,44 +57,39 @@ param acrSku string = 'Standard'
 @description('Enable admin user for ACR')
 param acrEnableAdmin bool = false
 
+@description('Enable private endpoint for ACR')
+param acrEnablePrivateEndpoint bool = false
+
 // ========================================
-// PostgreSQL Parameters
+// Cosmos DB for PostgreSQL Parameters
 // ========================================
-@description('PostgreSQL server name')
-param pgServerName string
+@description('Cosmos DB for PostgreSQL cluster name')
+param pgClusterName string
 
 @description('PostgreSQL version')
 param postgresVersion string = '16'
 
-@description('PostgreSQL SKU name')
-param pgSkuName string = 'Standard_B2s'
+@description('Administrator login password')
+@secure()
+param pgAdminPassword string
 
-@description('PostgreSQL SKU tier')
-param pgSkuTier string = 'Burstable'
+@description('Node count (0 for single node, 1+ for multi-node)')
+param pgNodeCount int = 0
 
-@description('PostgreSQL storage size in GB')
-param pgStorageSizeGB int = 32
+@description('Coordinator vCores')
+param pgCoordinatorVCores int = 2
 
-@description('PostgreSQL storage tier')
-param pgStorageTier string = 'P4'
+@description('Coordinator storage in MiB')
+param pgCoordinatorStorageMb int = 131072
 
-@description('PostgreSQL IOPS')
-param pgIops int = 120
+@description('Node vCores')
+param pgNodeVCores int = 2
 
-@description('PostgreSQL auto grow')
-param pgAutoGrow string = 'Enabled'
+@description('Node storage in MiB')
+param pgNodeStorageMb int = 131072
 
-@description('PostgreSQL backup retention days')
-param pgBackupRetentionDays int = 7
-
-@description('PostgreSQL geo-redundant backup')
-param pgGeoRedundantBackup string = 'Disabled'
-
-@description('PostgreSQL high availability mode')
-param pgHighAvailabilityMode string = 'Disabled'
-
-@description('Name of the database to create')
-param databaseName string
+@description('Enable high availability')
+param pgEnableHa bool = false
 
 // ========================================
 // Key Vault Parameters
@@ -101,6 +102,9 @@ param keyVaultSku string = 'standard'
 
 @description('Key Vault network ACLs default action')
 param kvNetworkAclsDefaultAction string = 'Deny'
+
+@description('Enable private endpoint for Key Vault')
+param kvEnablePrivateEndpoint bool = false
 
 // ========================================
 // Storage Account Parameters
@@ -146,6 +150,8 @@ module subnetsModule 'modules/subnets.bicep' = {
     containerAppSubnetAddress: containerAppSubnetAddress
     dbSubnetName: dbSubnetName
     dbSubnetAddress: dbSubnetAddress
+    privateEndpointSubnetName: privateEndpointSubnetName
+    privateEndpointSubnetAddress: privateEndpointSubnetAddress
   }
 }
 
@@ -181,31 +187,28 @@ module acrModule 'modules/acr.bicep' = {
     location: location
     acrSku: acrSku
     enableAdmin: acrEnableAdmin
+    enablePrivateEndpoint: acrEnablePrivateEndpoint
+    privateEndpointSubnetId: subnetsModule.outputs.privateEndpointSubnetId
   }
 }
 
 // ========================================
-// Deploy PostgreSQL Module
+// Deploy Cosmos DB for PostgreSQL Module
 // ========================================
 module postgresModule 'modules/postgresql.bicep' = {
   name: 'postgres-deployment'
   params: {
-    pgServerName: pgServerName
+    clusterName: pgClusterName
     location: location
-    managedIdentityId: managedIdentity.id
-    managedIdentityPrincipalId: managedIdentity.properties.principalId
-    privateEndpointSubnetId: subnetsModule.outputs.dbSubnetId
+    administratorLoginPassword: pgAdminPassword
     postgresVersion: postgresVersion
-    skuName: pgSkuName
-    skuTier: pgSkuTier
-    storageSizeGB: pgStorageSizeGB
-    storageTier: pgStorageTier
-    iops: pgIops
-    autoGrow: pgAutoGrow
-    backupRetentionDays: pgBackupRetentionDays
-    geoRedundantBackup: pgGeoRedundantBackup
-    highAvailabilityMode: pgHighAvailabilityMode
-    databaseName: databaseName
+    nodeCount: pgNodeCount
+    coordinatorVCores: pgCoordinatorVCores
+    coordinatorStorageQuotaInMb: pgCoordinatorStorageMb
+    nodeVCores: pgNodeVCores
+    nodeStorageQuotaInMb: pgNodeStorageMb
+    enableHa: pgEnableHa
+    privateEndpointSubnetId: subnetsModule.outputs.privateEndpointSubnetId
   }
 }
 
@@ -237,6 +240,8 @@ module keyVaultModule 'modules/keyvault.bicep' = {
     keyVaultSku: keyVaultSku
     networkAclsDefaultAction: kvNetworkAclsDefaultAction
     containerAppSubnetId: subnetsModule.outputs.containerAppSubnetId
+    enablePrivateEndpoint: kvEnablePrivateEndpoint
+    privateEndpointSubnetId: subnetsModule.outputs.privateEndpointSubnetId
   }
 }
 
@@ -251,7 +256,7 @@ module storageModule 'modules/storage.bicep' = {
     replicationType: storageReplicationType
     sku: storageSku
     accessTier: storageAccessTier
-    subnetId: subnetsModule.outputs.dbSubnetId
+    subnetId: subnetsModule.outputs.privateEndpointSubnetId
     enablePrivateEndpoint: storageEnablePrivateEndpoint
     containerAppSubnetId: subnetsModule.outputs.containerAppSubnetId
   }
@@ -270,9 +275,9 @@ output acrId string = acrModule.outputs.acrId
 output acrLoginServer string = acrModule.outputs.acrLoginServer
 output acrName string = acrModule.outputs.acrName
 
-output postgresServerName string = postgresModule.outputs.postgresServerName
-output postgresServerFQDN string = postgresModule.outputs.postgresServerFQDN
-output databaseName string = postgresModule.outputs.databaseName
+output postgresClusterName string = postgresModule.outputs.clusterName
+output postgresClusterEndpoint string = postgresModule.outputs.clusterEndpoint
+output postgresClusterResourceId string = postgresModule.outputs.clusterResourceId
 
 output keyVaultId string = keyVaultModule.outputs.keyVaultId
 output keyVaultName string = keyVaultModule.outputs.keyVaultName
