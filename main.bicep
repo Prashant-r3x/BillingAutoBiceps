@@ -15,12 +15,6 @@ param containerAppSubnetName string
 @description('Address prefix for Container App subnet (e.g., 10.58.52.0/28)')
 param containerAppSubnetAddress string
 
-@description('Name of the subnet for databases (private endpoints)')
-param dbSubnetName string
-
-@description('Address prefix for database subnet (e.g., 10.58.52.16/28)')
-param dbSubnetAddress string
-
 @description('Name of the subnet for private endpoints')
 param privateEndpointSubnetName string
 
@@ -148,8 +142,6 @@ module subnetsModule 'modules/subnets.bicep' = {
     vnetName: vnetName
     containerAppSubnetName: containerAppSubnetName
     containerAppSubnetAddress: containerAppSubnetAddress
-    dbSubnetName: dbSubnetName
-    dbSubnetAddress: dbSubnetAddress
     privateEndpointSubnetName: privateEndpointSubnetName
     privateEndpointSubnetAddress: privateEndpointSubnetAddress
   }
