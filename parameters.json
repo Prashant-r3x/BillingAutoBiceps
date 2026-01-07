@@ -6,11 +6,11 @@
 
     "vnetName": { "value": "ITCOLT-D-NA22-VNET" },
     "containerAppSubnetName": { "value": "containerAppSubnet" },
-    "containerAppSubnetAddress": { "value": "10.58.52.0/27" },
+    "containerAppSubnetAddress": { "value": "10.58.52.0/28" },
     "dbSubnetName": { "value": "dbSubnet" },
-    "dbSubnetAddress": { "value": "10.58.52.32/27" },
+    "dbSubnetAddress": { "value": "10.58.52.16/28" },
     "privateEndpointSubnetName": { "value": "privateEndpointSubnet" },
-    "privateEndpointSubnetAddress": { "value": "10.58.52.64/27" },
+    "privateEndpointSubnetAddress": { "value": "10.58.52.32/27" },
 
     "managedIdentityName": { "value": "billing-auto-mi" },
 
