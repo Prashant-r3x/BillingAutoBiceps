@@ -55,35 +55,40 @@ param acrEnableAdmin bool = false
 param acrEnablePrivateEndpoint bool = false
 
 // ========================================
-// Cosmos DB for PostgreSQL Parameters
+// PostgreSQL Flexible Server Parameters
 // ========================================
-@description('Cosmos DB for PostgreSQL cluster name')
-param pgClusterName string
+@description('PostgreSQL flexible server name')
+param pgServerName string
 
 @description('PostgreSQL version')
 param postgresVersion string = '16'
 
-@description('Administrator login password')
-@secure()
-param pgAdminPassword string
+@description('SKU Name (e.g., Standard_B2s, Standard_B1ms)')
+param pgSkuName string = 'Standard_B2s'
 
-@description('Node count (0 for single node, 1+ for multi-node)')
-param pgNodeCount int = 0
+@description('SKU Tier: Burstable, GeneralPurpose, MemoryOptimized')
+param pgSkuTier string = 'Burstable'
 
-@description('Coordinator vCores')
-param pgCoordinatorVCores int = 2
+@description('Storage size in GB')
+param pgStorageSizeGB int = 32
 
-@description('Coordinator storage in MiB')
-param pgCoordinatorStorageMb int = 131072
+@description('Storage tier')
+param pgStorageTier string = 'P4'
 
-@description('Node vCores')
-param pgNodeVCores int = 2
+@description('IOPS for storage')
+param pgIops int = 120
 
-@description('Node storage in MiB')
-param pgNodeStorageMb int = 131072
+@description('Enable or disable storage auto grow')
+param pgAutoGrow string = 'Enabled'
 
-@description('Enable high availability')
-param pgEnableHa bool = false
+@description('Backup retention days')
+param pgBackupRetentionDays int = 7
+
+@description('Geo-redundant backup (Disabled or Enabled)')
+param pgGeoRedundantBackup string = 'Disabled'
+
+@description('High availability mode (Disabled or ZoneRedundant)')
+param pgHighAvailabilityMode string = 'Disabled'
 
 // ========================================
 // Key Vault Parameters
@@ -185,22 +190,26 @@ module acrModule 'modules/acr.bicep' = {
 }
 
 // ========================================
-// Deploy Cosmos DB for PostgreSQL Module
+// Deploy PostgreSQL Flexible Server Module
 // ========================================
 module postgresModule 'modules/postgresql.bicep' = {
   name: 'postgres-deployment'
   params: {
-    clusterName: pgClusterName
+    pgServerName: pgServerName
     location: location
-    administratorLoginPassword: pgAdminPassword
-    postgresVersion: postgresVersion
-    nodeCount: pgNodeCount
-    coordinatorVCores: pgCoordinatorVCores
-    coordinatorStorageQuotaInMb: pgCoordinatorStorageMb
-    nodeVCores: pgNodeVCores
-    nodeStorageQuotaInMb: pgNodeStorageMb
-    enableHa: pgEnableHa
+    managedIdentityId: managedIdentity.id
+    managedIdentityPrincipalId: managedIdentity.properties.principalId
     privateEndpointSubnetId: subnetsModule.outputs.privateEndpointSubnetId
+    postgresVersion: postgresVersion
+    skuName: pgSkuName
+    skuTier: pgSkuTier
+    storageSizeGB: pgStorageSizeGB
+    storageTier: pgStorageTier
+    iops: pgIops
+    autoGrow: pgAutoGrow
+    backupRetentionDays: pgBackupRetentionDays
+    geoRedundantBackup: pgGeoRedundantBackup
+    highAvailabilityMode: pgHighAvailabilityMode
   }
 }
 
@@ -267,9 +276,11 @@ output acrId string = acrModule.outputs.acrId
 output acrLoginServer string = acrModule.outputs.acrLoginServer
 output acrName string = acrModule.outputs.acrName
 
-output postgresClusterName string = postgresModule.outputs.clusterName
-output postgresClusterEndpoint string = postgresModule.outputs.clusterEndpoint
-output postgresClusterResourceId string = postgresModule.outputs.clusterResourceId
+output postgresServerName string = postgresModule.outputs.postgresServerName
+output postgresServerFQDN string = postgresModule.outputs.postgresServerFQDN
+output postgresServerResourceId string = postgresModule.outputs.postgresServerResourceId
+output postgresDatabaseName string = postgresModule.outputs.databaseName
+output postgresPrivateEndpointId string = postgresModule.outputs.postgresPrivateEndpointId
 
 output keyVaultId string = keyVaultModule.outputs.keyVaultId
 output keyVaultName string = keyVaultModule.outputs.keyVaultName
