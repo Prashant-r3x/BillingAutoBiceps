@@ -21,9 +21,6 @@ param privateEndpointSubnetId string = ''
 resource acr 'Microsoft.ContainerRegistry/registries@2023-01-01-preview' = {
   name: replace(toLower(acrName), '-', '')
   location: location
-  tags: {
-    'acrnetexclude': 'UC2'
-  }
   sku: {
     name: acrSku
   }

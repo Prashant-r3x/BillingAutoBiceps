@@ -6,9 +6,9 @@
 
     "vnetName": { "value": "ITCOLT-D-LYZR-NA20-VNET" },
     "containerAppSubnetName": { "value": "containerAppSubnet" },
-    "containerAppSubnetAddress": { "value": "10.58.41.0/28" },
+    "containerAppSubnetAddress": { "value": "10.58.41.0/27" },
     "privateEndpointSubnetName": { "value": "privateEndpointSubnet" },
-    "privateEndpointSubnetAddress": { "value": "10.58.41.16/28" },
+    "privateEndpointSubnetAddress": { "value": "10.58.41.32/27" },
 
     "managedIdentityName": { "value": "wtw-billing-auto-mi-eastus2" },
 
@@ -16,12 +16,12 @@
     "logAnalyticsSku": { "value": "PerGB2018" },
     "logAnalyticsRetentionDays": { "value": 30 },
 
-    "acrName": { "value": "wtwbillingautoacr" },
+    "acrName": { "value": "wtwbillingacr" },
     "acrSku": { "value": "Premium" },
     "acrEnableAdmin": { "value": false },
     "acrEnablePrivateEndpoint": { "value": true },
 
-    "pgServerName": { "value": "billing-auto-pg" },
+    "pgServerName": { "value": "wtw-billing-pg" },
     "postgresVersion": { "value": "16" },
     "pgSkuName": { "value": "Standard_B2s" },
     "pgSkuTier": { "value": "Burstable" },
@@ -33,12 +33,12 @@
     "pgGeoRedundantBackup": { "value": "Disabled" },
     "pgHighAvailabilityMode": { "value": "Disabled" },
 
-    "keyVaultName": { "value": "wtw-billing-auto-kv" },
+    "keyVaultName": { "value": "wtw-billing-kv" },
     "keyVaultSku": { "value": "standard" },
     "kvNetworkAclsDefaultAction": { "value": "Deny" },
     "kvEnablePrivateEndpoint": { "value": true },
 
-    "storageAccountName": { "value": "wtwbillingautostorage" },
+    "storageAccountName": { "value": "wtwbillingstorage" },
     "storageReplicationType": { "value": "LRS" },
     "storageSku": { "value": "Standard" },
     "storageAccessTier": { "value": "Hot" },
